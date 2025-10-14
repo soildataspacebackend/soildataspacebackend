@@ -14,7 +14,7 @@ FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copiar el jar generado desde la etapa anterior
-COPY --from=builder /app/target/demo.jar /app/api-v1.jar
+COPY --from=builder /app/target/demo-0.0.1-SNAPSHOT.jar /app/api-v1.jar
 
 EXPOSE 8080
 
