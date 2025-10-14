@@ -1,11 +1,21 @@
-# Imagen base: Microsoft Build of OpenJDK 21 (versión ligera de Alpine)
+FROM maven:3.9.9-eclipse-temurin-21 AS builder
+WORKDIR /app
+
+# Copiar pom.xml y descargar dependencias (cacheable)
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+# Copiar el código fuente y compilar el proyecto
+COPY src ./src
+RUN mvn clean package -DskipTests -B
+
+# ---------- Etapa 2: Runtime ----------
 FROM mcr.microsoft.com/openjdk/jdk:21-ubuntu
+WORKDIR /app
 
-# Copiar el JAR compilado desde la carpeta target
-COPY target/demo.jar /api-v1.jar
+# Copiar el jar generado desde la etapa anterior
+COPY --from=builder /app/target/demo.jar /app/api-v1.jar
 
-# Exponer el puerto que usa Spring Boot
 EXPOSE 8080
 
-# Comando por defecto: ejecutar el JAR con Java
-ENTRYPOINT ["java", "-jar", "/api-v1.jar"]
+ENTRYPOINT ["java", "-jar", "/app/api-v1.jar"]
