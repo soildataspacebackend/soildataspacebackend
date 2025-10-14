@@ -19,7 +19,6 @@ public class News {
 
     @Id
     private String id;
-
     private String title;
     private String date;
     private String author;
@@ -117,7 +116,7 @@ public class News {
      * // corregir el de aquellos que no sean obligatorios
      * @return
      */
-    public boolean isNotValid() {
+    public boolean NotValid() {
         // CAMPOS OBLIGATORIOS
 
         if (title == null || title.trim().isEmpty()) {

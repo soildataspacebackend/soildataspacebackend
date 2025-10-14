@@ -88,7 +88,7 @@ public class NewsController {
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
-        if(newsRequest.isNotValid()) {
+        if(newsRequest.NotValid()) {
             response.put("mensaje" , "El formato de la noticia no es válido");
             response.put("status" , HttpStatus.CONFLICT);
             return new ResponseEntity<>(response , HttpStatus.CONFLICT);
