@@ -29,20 +29,20 @@ public class UserController {
     private UserRepository userRepository;
     Map<String , Object> response = new HashMap<>();
 
-    /**
-     * Metodo para obtener un listado de todos los usuarios registrados
-     * @return todos los usuarios registrados
-     */
-    @GetMapping(value = "/all")
-    public ResponseEntity<Map<String , Object>> getAllUsers() {
-        response.clear();
-
-        ArrayList<User> users = userRepository.findAllBy();
-
-        response.put("users" , users);
-
-        return new ResponseEntity<>(response , HttpStatus.OK);
-    }
+//    /**
+//     * Metodo para obtener un listado de todos los usuarios registrados
+//     * @return todos los usuarios registrados
+//     */
+//    @GetMapping(value = "/all")
+//    public ResponseEntity<Map<String , Object>> getAllUsers() {
+//        response.clear();
+//
+//        ArrayList<User> users = userRepository.findAllBy();
+//
+//        response.put("users" , users);
+//
+//        return new ResponseEntity<>(response , HttpStatus.OK);
+//    }
 
 
     /**
