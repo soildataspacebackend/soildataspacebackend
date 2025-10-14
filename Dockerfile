@@ -10,7 +10,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests -B
 
 # ---------- Etapa 2: Runtime ----------
-FROM mcr.microsoft.com/openjdk/jdk:21-ubuntu
+FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app
 
 # Copiar el jar generado desde la etapa anterior
