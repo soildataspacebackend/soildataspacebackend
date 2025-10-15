@@ -6,7 +6,7 @@ public final class Constantes {
     }
 
     public static final String MARKETIN_USER = "Marketing";
-    public static final String DEFAULT_USER = "User";
+    public static final String DEFAULT_USER = "user";
 
     public static final String RESPONSE_MESSAGE = "mensaje";
 }
