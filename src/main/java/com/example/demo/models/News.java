@@ -21,7 +21,6 @@ public class News {
     private String id;
     private String title;
 
-    @DateTimeFormat
     private String date;
     private String author;
     private String category;
