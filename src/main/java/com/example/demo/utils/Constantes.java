@@ -9,7 +9,4 @@ public final class Constantes {
     public static final String DEFAULT_USER = "USER";
 
     public static final String RESPONSE_MESSAGE = "mensaje";
-
-
-
 }

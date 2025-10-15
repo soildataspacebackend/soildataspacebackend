@@ -46,6 +46,16 @@ public class NewsController {
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
 
+    @GetMapping(value = "/agent")
+    public ResponseEntity<Map<String , Object>> getAgentResponse() {
+        response.clear();
+
+        System.out.println("El para nada, un agente, funciona");
+        response.put(RESPONSE_MESSAGE , "El agente te saluda");
+
+        return new ResponseEntity<>(response , HttpStatus.OK);
+    }
+
 
     /**
      * Metodo para obtener una noticia por su id
