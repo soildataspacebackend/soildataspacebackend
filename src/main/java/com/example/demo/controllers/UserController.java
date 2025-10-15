@@ -90,7 +90,7 @@ public class UserController {
         }
 
         // Si llega aqui entonces esta correcto
-        response.put(DEFAULT_USER , tempUser);
+        response.put("user" , tempUser);
         response.put(RESPONSE_MESSAGE, "Login realizado con éxito");
 
         return new ResponseEntity<>(response , HttpStatus.OK);
