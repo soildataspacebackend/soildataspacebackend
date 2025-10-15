@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.example.demo.utils.Constantes.*;
+
 
 @RestController
 @RequestMapping(value = "/api/v1/news")
@@ -24,14 +26,14 @@ public class NewsController {
 
     @Autowired
     private NewsRepository newsRepository;
-
     @Autowired
     private UserRepository userRepository;
+
     Map<String , Object> response = new HashMap<>();
 
     /**
      * Metodo para obtener el listado de noticias
-     * @return
+     * @return un listado de todas las noticias disponibles
      */
     @GetMapping(value = "/all")
     public ResponseEntity<Map<String , Object>> getAllNews() {
@@ -47,7 +49,8 @@ public class NewsController {
 
     /**
      * Metodo para obtener una noticia por su id
-     * @param request @return
+     * @param request el id de la noticia
+     * @return devuelve un response entity con la noticia solicitda, en caso de que exista
      */
     @GetMapping(value = "/id")
     public ResponseEntity<Map<String, Object>> getNewBy(@RequestBody IdRequest request){
@@ -56,7 +59,7 @@ public class NewsController {
         News requestedNew = newsRepository.getNewsById(request.getId());
 
         if(requestedNew == null) {
-            response.put("mensaje", "No hay noticias con ese ID");
+            response.put(RESPONSE_MESSAGE, "No hay noticias con ese ID");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
 
@@ -67,8 +70,8 @@ public class NewsController {
 
     /**
      * Metodo para permitir al usuario de noticias, crear nuevas noticias
-     * @param payloadRequestNew
-     * @return
+     * @param payloadRequestNew objeto que incluye la información de la noticia junto el token de usuario
+     * @return un mensaje indicado si se ha realizado correctamente
      */
     @PostMapping(value = "/addNew")
     public ResponseEntity<Map<String , Object>> addNew(@RequestBody PayloadRequestNew payloadRequestNew) {
@@ -78,18 +81,18 @@ public class NewsController {
         String authToken = payloadRequestNew.getAuthTokenId();
 
         if (authToken.trim().isEmpty()){
-            response.put("mensaje", "No autorizado");
+            response.put(RESPONSE_MESSAGE, "No autorizado");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
         User temp = userRepository.findByAuthToken(authToken);
-        if (temp == null || !temp.getUserGroup().equals("MARKETING")) {
-            response.put("mensaje", "No autorizado");
+        if (temp == null || !temp.getUserGroup().equals(MARKETIN_USER)) {
+            response.put(RESPONSE_MESSAGE, "No autorizado");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
         if(newsRequest.NotValid()) {
-            response.put("mensaje" , "El formato de la noticia no es válido");
+            response.put(RESPONSE_MESSAGE , "El formato de la noticia no es válido");
             response.put("status" , HttpStatus.CONFLICT);
             return new ResponseEntity<>(response , HttpStatus.CONFLICT);
         }
@@ -97,7 +100,7 @@ public class NewsController {
         // En caso de que si vaya bien, entonces seguimos, puede hacer la noticia
         News savedNew = newsRepository.save(newsRequest);
 
-        response.put("mensaje" , "Se ha creado la noticia con éxito");
+        response.put(RESPONSE_MESSAGE , "Se ha creado la noticia con éxito");
         response.put("id" , savedNew.getId());
 
         return ResponseEntity.ok().body(response);
@@ -106,9 +109,9 @@ public class NewsController {
 
     /**
      * Metodo para borrar una noticia que se solicite, es necesario tener autorización
-     * @param deleteNewRequestId
-     * @param authTokenInfo
-     * @return
+     * @param deleteNewRequestId el id de la noticia que se quiere eliminar
+     * @param authTokenInfo el token asignado por el backend para un usuario
+     * @return un mensaje indicando si la operación se ha realizado correctamente
      */
     @DeleteMapping("/deleteNew")
     public ResponseEntity<Map<String , Object>> deleteNew(@RequestHeader(value = "id") String deleteNewRequestId , @RequestBody TokenInfo authTokenInfo) {
@@ -117,18 +120,18 @@ public class NewsController {
         String authToken = authTokenInfo.getId();
 
         if (authToken.trim().isEmpty()){
-            response.put("mensaje", "No autorizado");
+            response.put(RESPONSE_MESSAGE, "No autorizado");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
         User temp = userRepository.findByAuthToken(authToken);
-        if (temp == null || !temp.getUserGroup().equals("MARKETING")) {
-            response.put("mensaje", "No autorizado");
+        if (temp == null || !temp.getUserGroup().equals(MARKETIN_USER)) {
+            response.put(RESPONSE_MESSAGE, "No autorizado");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
         }
 
         if(deleteNewRequestId == null || deleteNewRequestId.isEmpty()) {
-            response.put("mensaje" , "El id de la petición no es correcto");
+            response.put(RESPONSE_MESSAGE , "El id de la petición no es correcto");
             response.put("status" , HttpStatus.BAD_REQUEST);
 
             return new ResponseEntity<>(response , HttpStatus.BAD_REQUEST);
@@ -137,7 +140,7 @@ public class NewsController {
         News tempNew = newsRepository.getNewsById(deleteNewRequestId);
 
         if(tempNew == null) {
-            response.put("mensaje" , "Id no valido");
+            response.put(RESPONSE_MESSAGE , "Id no valido");
             response.put("status" , HttpStatus.CONFLICT);
 
             return new ResponseEntity<>(response , HttpStatus.CONFLICT);
@@ -145,7 +148,7 @@ public class NewsController {
 
         newsRepository.delete(tempNew);
 
-        response.put("mensaje" , "La operación se ha realizado exitosamente.");
+        response.put(RESPONSE_MESSAGE , "La operación se ha realizado exitosamente.");
         response.put("status" , HttpStatus.OK);
 
         return ResponseEntity.ok(response);

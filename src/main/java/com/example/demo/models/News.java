@@ -27,6 +27,7 @@ public class News {
     private String description;
     private String content;
     private String link;
+    private String buttonText;
 
     public String getId() {
         return id;
@@ -107,8 +108,6 @@ public class News {
     public void setDate(String date) {
         this.date = date;
     }
-
-    private String buttonText;
 
 
     /**

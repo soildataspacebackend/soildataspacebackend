@@ -1,8 +1,5 @@
 package com.example.demo.controllers;
 
-import jakarta.validation.Valid;
-
-import org.apache.coyote.Response;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -13,13 +10,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
+import static com.example.demo.utils.Constantes.*;
 
 @RestController
 @RequestMapping(value = "/api/v1/user")
@@ -27,46 +22,13 @@ public class UserController {
 
     @Autowired
     private UserRepository userRepository;
+
     Map<String , Object> response = new HashMap<>();
-
-//    /**
-//     * Metodo para obtener un listado de todos los usuarios registrados
-//     * @return todos los usuarios registrados
-//     */
-//    @GetMapping(value = "/all")
-//    public ResponseEntity<Map<String , Object>> getAllUsers() {
-//        response.clear();
-//
-//        ArrayList<User> users = userRepository.findAllBy();
-//
-//        response.put("users" , users);
-//
-//        return new ResponseEntity<>(response , HttpStatus.OK);
-//    }
-
-
-    /**
-     * Metodo para generar usuarios a mano
-     */
-    private void generarUsuarios() {
-        // Aqui vamos a crear dos usuarios, para hacer pruebas
-        User user1 = new User("Jorge" , "adrian@ujaen.es" , "12345679" );
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-        String hashedPassword = passwordEncoder.encode(user1.getPassword());
-        user1.setPassword(hashedPassword);
-
-        // Ahora aqui tenemos que generarle el token
-        user1.setAuthToken(generarApi_Token());
-//        user1.setUserGroup("MARKETING");
-
-        userRepository.save(user1);
-    }
 
     /**
      * Metodo para obtener verificar el login del usuario
      * @param authToken
-     * @return
+     * @return devuelve true en caso de que tenga un token válido y false en caso contrario
      */
     @GetMapping(value = "/status")
     public ResponseEntity<Boolean> checkStatus(@RequestHeader(value = "Authorization") String authToken) {
@@ -77,7 +39,7 @@ public class UserController {
 
         User tempUser = userRepository.findByAuthToken(authToken);
 
-        if(tempUser != null && tempUser.getUserGroup() != null && tempUser.getUserGroup().equals("MARKETING")) {
+        if(tempUser != null && tempUser.getUserGroup() != null && tempUser.getUserGroup().equals(MARKETIN_USER)) {
             // Entonces va bien la cosa
             return new ResponseEntity<>(true , HttpStatus.OK);
         }
@@ -87,8 +49,8 @@ public class UserController {
 
     /**
      * Metodo para realizar el login de un usuario, es necesario que tenga datos validos
-     * @param user
-     * @return
+     * @param user el usuario que va a hacer el login
+     * @return un mensaje indicando si se ha realizado correctamente
      */
     @PostMapping(value = "/login")
     public ResponseEntity<Map<String , Object>> login(@RequestBody User user) {
@@ -97,7 +59,8 @@ public class UserController {
         // Si algun campo no se ha introducido , mandamos respuesta con el error
         if (user.getName() == null || user.getName().trim().isEmpty() || user.getPassword() == null) {
             Map<String, Object> errorResponse = new HashMap<>();
-            errorResponse.put("mensaje", "Nombre de usuario y contraseña son campos obligatorios.");
+            errorResponse.put(RESPONSE_MESSAGE, "Nombre de usuario y contraseña son campos obligatorios.");
+
             return ResponseEntity.badRequest().body(errorResponse);
         }
 
@@ -114,16 +77,16 @@ public class UserController {
             }
         }
 
-        if(credentialsInvalid || tempUser.getUserGroup() == null || !tempUser.getUserGroup().equals("MARKETING")) {
+        if(credentialsInvalid || tempUser.getUserGroup() == null || !tempUser.getUserGroup().equals(MARKETIN_USER)) {
             // Entonces tenemos que rechazar el acceso
-            response.put("mensaje" , "Nombre de usuario o contraseña incorrectos ");
+            response.put(RESPONSE_MESSAGE, "Nombre de usuario o contraseña incorrectos ");
 
             return new ResponseEntity<>(response , HttpStatus.UNAUTHORIZED);
         }
 
         // Si llega aqui entonces esta correcto
-        response.put("user" , tempUser);
-        response.put("mensaje" , "Login realizado con éxito");
+        response.put(DEFAULT_USER , tempUser);
+        response.put(RESPONSE_MESSAGE, "Login realizado con éxito");
 
         return new ResponseEntity<>(response , HttpStatus.OK);
     }
@@ -260,7 +223,10 @@ public class UserController {
 //        return new ResponseEntity<>(response , HttpStatus.UNAUTHORIZED);
 //    }
 
-    // Para generar el token que se le dara a cada usuario
+    /**
+     * Metodo para generar un token para los usuarios, es único
+     * @return
+     */
     private String generarApi_Token() {
         return UUID.randomUUID().toString();
     }
