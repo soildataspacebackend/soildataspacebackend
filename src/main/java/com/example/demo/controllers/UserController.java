@@ -1,5 +1,6 @@
 package com.example.demo.controllers;
 
+import com.example.demo.utils.SanitizerService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
@@ -24,6 +25,8 @@ public class UserController {
     private UserRepository userRepository;
 
     Map<String , Object> response = new HashMap<>();
+    @Autowired
+    private SanitizerService sanitizerService;
 
     /**
      * Metodo para obtener verificar el login del usuario
@@ -55,6 +58,8 @@ public class UserController {
     @PostMapping(value = "/login")
     public ResponseEntity<Map<String , Object>> login(@RequestBody User user) {
         response.clear();
+
+        cleanUserInfo(user);
 
         // Si algun campo no se ha introducido , mandamos respuesta con el error
         if (user.getName() == null || user.getName().trim().isEmpty() || user.getPassword() == null) {
@@ -229,5 +234,17 @@ public class UserController {
      */
     private String generarApi_Token() {
         return UUID.randomUUID().toString();
+    }
+
+
+    /**
+     * Metood para limpiar la información que pueda introducir el usuario
+     * @param user
+     * @return
+     */
+    private void cleanUserInfo(User user) {
+        user.setEmail(sanitizerService.sanitize(user.getEmail()));
+        user.setName(sanitizerService.sanitize(user.getName()));
+        user.setPassword(sanitizerService.sanitize(user.getPassword()));
     }
 }

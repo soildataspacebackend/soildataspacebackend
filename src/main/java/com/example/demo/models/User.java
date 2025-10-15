@@ -1,6 +1,10 @@
 package com.example.demo.models;
 
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,8 +17,17 @@ public class User {
     @Id
     private String id;
 
+    @NotNull(message = "El nombre no puede ser nulo")
+    @Size(min = 3, max = 15, message = "El nombre debe tener entre 3 y 15 caracteres")
+    @Pattern(regexp = "^[a-zA-Z0-9_.]+$", message = "El nombre solo puede contener letras, números, guiones bajos y puntos")
     private String name;
+
+    @NotNull(message = "El mail no puede ser nulo")
     private String email;
+
+    @NotBlank(message = "La contraseña no puede estar vacía")
+    @Size(min = 8, max = 255, message = "La contraseña debe tener entre 8 y 255 caracteres")
+
     private String password;
     private String userGroup;
     private String authToken;

@@ -4,6 +4,7 @@ package com.example.demo.models;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.TypeAlias;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -16,10 +17,11 @@ public class News {
     private static final DateTimeFormatter FORMATTER =
             DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-
     @Id
     private String id;
     private String title;
+
+    @DateTimeFormat
     private String date;
     private String author;
     private String category;

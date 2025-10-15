@@ -7,6 +7,7 @@ import com.example.demo.repositories.NewsRepository;
 import com.example.demo.repositories.UserRepository;
 import com.example.demo.utils.IdRequest;
 import com.example.demo.utils.PayloadRequestNew;
+import com.example.demo.utils.SanitizerService;
 import com.example.demo.utils.TokenInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +31,8 @@ public class NewsController {
     private UserRepository userRepository;
 
     Map<String , Object> response = new HashMap<>();
+    @Autowired
+    private SanitizerService sanitizerService;
 
     /**
      * Metodo para obtener el listado de noticias
@@ -90,6 +93,8 @@ public class NewsController {
         News newsRequest = payloadRequestNew.getNews();
         String authToken = payloadRequestNew.getAuthTokenId();
 
+        cleanNewsInfo(newsRequest);
+
         if (authToken.trim().isEmpty()){
             response.put(RESPONSE_MESSAGE, "No autorizado");
             return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
@@ -112,6 +117,7 @@ public class NewsController {
 
         response.put(RESPONSE_MESSAGE , "Se ha creado la noticia con éxito");
         response.put("id" , savedNew.getId());
+        response.put("pruebas" , savedNew);
 
         return ResponseEntity.ok().body(response);
     }
@@ -127,7 +133,7 @@ public class NewsController {
     public ResponseEntity<Map<String , Object>> deleteNew(@RequestHeader(value = "id") String deleteNewRequestId , @RequestBody TokenInfo authTokenInfo) {
         response.clear();
 
-        String authToken = authTokenInfo.getId();
+        String authToken = sanitizerService.sanitize(authTokenInfo.getId());
 
         if (authToken.trim().isEmpty()){
             response.put(RESPONSE_MESSAGE, "No autorizado");
@@ -162,5 +168,18 @@ public class NewsController {
         response.put("status" , HttpStatus.OK);
 
         return ResponseEntity.ok(response);
+    }
+
+
+    private void cleanNewsInfo(News news) {
+        news.setAuthor(sanitizerService.sanitize(news.getAuthor()));
+        news.setCategory(sanitizerService.sanitize(news.getCategory()));
+        news.setDate(sanitizerService.sanitize(news.getDate()));
+        news.setContent(sanitizerService.sanitize(news.getContent()));
+        news.setDescription(sanitizerService.sanitize(news.getDescription()));
+        news.setButtonText(sanitizerService.sanitize(news.getButtonText()));
+        news.setImage(sanitizerService.sanitize(news.getImage()));
+        news.setAuthor(sanitizerService.sanitize(news.getAuthor()));
+        news.setTitle(sanitizerService.sanitize(news.getTitle()));
     }
 }
