@@ -144,11 +144,11 @@ public class News {
         }
 
         if(buttonText == null || buttonText.isEmpty()) {
-            buttonText = "Botón por defecto";
+            buttonText = "Visitar";
         }
 
         if(link == null || link.isEmpty()) {
-            link = "Enlace sin definir";
+            link = "";
         }
 
         return false;
