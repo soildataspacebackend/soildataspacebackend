@@ -76,8 +76,6 @@ public class UserController {
         if(tempUser != null ) {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
             if (passwordEncoder.matches(user.getPassword(), tempUser.getPassword())) {
-                System.out.println(user.getPassword() + " --- " + tempUser.getPassword());
-
                 credentialsInvalid = false;
             }
         }
@@ -90,8 +88,9 @@ public class UserController {
         }
 
         // Si llega aqui entonces esta correcto
-        response.put("user" , tempUser);
+
         response.put(RESPONSE_MESSAGE, "Login realizado con éxito");
+        response.put("user" , tempUser.getName());
 
         return new ResponseEntity<>(response , HttpStatus.OK);
     }

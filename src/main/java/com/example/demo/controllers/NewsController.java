@@ -53,7 +53,6 @@ public class NewsController {
     public ResponseEntity<Map<String , Object>> getAgentResponse() {
         response.clear();
 
-        System.out.println("El para nada, un agente, funciona");
         response.put(RESPONSE_MESSAGE , "El agente te saluda");
 
         return new ResponseEntity<>(response , HttpStatus.OK);
@@ -113,11 +112,9 @@ public class NewsController {
         }
 
         // En caso de que si vaya bien, entonces seguimos, puede hacer la noticia
-        News savedNew = newsRepository.save(newsRequest);
+        newsRepository.save(newsRequest);
 
         response.put(RESPONSE_MESSAGE , "Se ha creado la noticia con éxito");
-        response.put("id" , savedNew.getId());
-        response.put("pruebas" , savedNew);
 
         return ResponseEntity.ok().body(response);
     }
